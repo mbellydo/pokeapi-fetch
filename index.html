@@ -34,20 +34,62 @@
           </select>
     </div>
     <script>
-        function getNewPokemon(event) {
-        // Hacer que cada vez que se cambie el valor del select, se invoque esta función. Hacer una llamada con la Fetch API al endpoint para obtener los pokemons por nombre de pokemon. Debeis usar su nombre de pokemon como parte dinámica de la URL
+        const image = document.querySelector('img');
+        const pkmnName = document.querySelector('.card-title');
+        const button = document.querySelector('.btn-success');
+        const selected = document.querySelector('.form-select');
+        
+        selected.addEventListener('change', (event) => {
+            getNewPokemon(event);
+        })
 
+        function getNewPokemon(event) {
+            // Hacer que cada vez que se cambie el valor del select, se invoque esta función. 
+            // Hacer una llamada con la Fetch API al endpoint para obtener los pokemons por nombre de pokemon. 
+            // Debeis usar su nombre de pokemon como parte dinámica de la URL
+            
+            const url = 'https://pokeapi.co/api/v2/pokemon/'
+            const pkmnSelected = selected.value;
+            urlUpdated = url + pkmnSelected
+            
+            if(selected.value == "Select one pokemon"){
+                fetch(url)
+                    .then(response => response.json())
+                    .then(response => updatePokemon(response))
+                    .catch(error => console.log(error));
+            }else{       
+                fetch(urlUpdated)
+                    .then(response => response.json())
+                    .then(response => updatePokemon(response))
+                    .catch(error => console.log(error)); 
+            }          
         }
 
         function updatePokemon(response) {
             // cuando se ha completado el Fetch, este debe hacer una llamada a esta función pasando por parámetro los datos recibidos.
             // La función debe actualizar los elementos del DOM: imagen del pokemon, nombre, y guardar en algun lugar la ruta a la foto "shiny" del pokemon
+            
+            if (selected.value == "Select one pokemon"){
+                image.setAttribute("src", "");
+                image.setAttribute('style', 'display: none !important');
+                document.querySelector('h5').innerHTML = "Lorepokemon";
+            }else{
+                image.setAttribute("src", response.sprites.front_default);
+                image.setAttribute('style', 'display: block !important');
+
+                pkmnName.innerHTML = response.name
+            }
+            
+            button.addEventListener('click', function(){
+                changeToShiny(response);
+            })
         }
 
-        function changeToShiny() {
+        function changeToShiny(response) {
             // esta función debe ser llamada al hacer clic en el botón "Change to Shiny"; de manera que actualice la imagen a la versión "shiny" del Pokemon
+            
+            image.setAttribute("src", response.sprites.front_shiny);
         }
-
     </script>
 </body>
 
